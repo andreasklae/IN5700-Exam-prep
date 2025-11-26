@@ -2,6 +2,10 @@
 
 An interactive, gamified React application designed to help you master Fog and Cloud Computing concepts for your oral exam.
 
+**🚀 Live App:** https://andreasklae.github.io/IN5700-Exam-work/
+
+[![Deploy Status](https://github.com/andreasklae/IN5700-Exam-work/actions/workflows/deploy.yml/badge.svg)](https://github.com/andreasklae/IN5700-Exam-work/actions)
+
 ## Features ✨
 
 ### 📚 Topic Explorer
