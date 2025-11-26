@@ -4,7 +4,7 @@ An interactive, gamified React application designed to help you master Fog and C
 
 **🚀 Live App:** https://andreasklae.github.io/IN5700-Exam-prep/
 
-[![Deploy Status](https://github.com/andreasklae/IN5700-Exam-prep/actions/workflows/deploy.yml/badge.svg)](https://github.com/andreasklae/IN5700-Exam-work/actions)
+[![Deploy Status](https://github.com/andreasklae/IN5700-Exam-prep/actions/workflows/deploy.yml/badge.svg)](https://github.com/andreasklae/IN5700-Exam-prep/actions)
 
 ## Features ✨
 
