@@ -1,19 +1,31 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, Brain, Trophy, Target, TrendingUp, Award } from 'lucide-react';
+import { BookOpen, Brain, Trophy, Target, TrendingUp, Award, Cloud } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import TopicExplorer from './components/TopicExplorer';
 import FlashcardMode from './components/FlashcardMode';
 import QuizMode from './components/QuizMode';
 import ProgressView from './components/ProgressView';
 import AchievementView from './components/AchievementView';
+import SyncSettings from './components/SyncSettings';
 import { loadProgress, saveProgress } from './utils/storage';
+import { autoSync } from './utils/sync';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [progress, setProgress] = useState(loadProgress());
+  const [showSyncSettings, setShowSyncSettings] = useState(false);
 
   useEffect(() => {
     saveProgress(progress);
+    
+    // Auto-sync every 5 minutes if sync code exists
+    if (progress.syncCode) {
+      const syncInterval = setInterval(() => {
+        autoSync(progress.syncCode, progress);
+      }, 5 * 60 * 1000);
+      
+      return () => clearInterval(syncInterval);
+    }
   }, [progress]);
 
   const updateProgress = (updates) => {
@@ -56,6 +68,14 @@ function App() {
     achievements: <AchievementView progress={progress} onBack={() => setCurrentView('dashboard')} />,
   };
 
+  const handleUpdateProgress = (updates) => {
+    updateProgress(updates);
+    // Auto-sync after updates if sync is enabled
+    if (progress.syncCode) {
+      autoSync(progress.syncCode, { ...progress, ...updates });
+    }
+  };
+
   const navigation = [
     { id: 'dashboard', label: 'Dashboard', icon: Target },
     { id: 'topics', label: 'Topics', icon: BookOpen },
@@ -82,6 +102,16 @@ function App() {
             </div>
             
             <div className="flex items-center space-x-6">
+              <button
+                onClick={() => setShowSyncSettings(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors"
+                title="Sync across devices"
+              >
+                <Cloud size={20} className="text-indigo-600" />
+                <span className="text-sm font-medium text-indigo-700">
+                  {progress.syncCode ? 'Synced' : 'Sync'}
+                </span>
+              </button>
               <div className="text-right">
                 <div className="text-sm text-gray-600">Total Points</div>
                 <div className="text-xl font-bold text-indigo-600">{progress.totalPoints || 0}</div>
@@ -126,6 +156,15 @@ function App() {
       <footer className="mt-12 pb-8 text-center text-gray-600">
         <p className="text-sm">Good luck with your exam! 🎓</p>
       </footer>
+
+      {/* Sync Settings Modal */}
+      {showSyncSettings && (
+        <SyncSettings
+          progress={progress}
+          updateProgress={handleUpdateProgress}
+          onClose={() => setShowSyncSettings(false)}
+        />
+      )}
     </div>
   );
 }

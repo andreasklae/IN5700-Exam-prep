@@ -2,9 +2,9 @@
 
 An interactive, gamified React application designed to help you master Fog and Cloud Computing concepts for your oral exam.
 
-**🚀 Live App:** https://andreasklae.github.io/IN5700-Exam-work/
+**🚀 Live App:** https://andreasklae.github.io/IN5700-Exam-prep/
 
-[![Deploy Status](https://github.com/andreasklae/IN5700-Exam-work/actions/workflows/deploy.yml/badge.svg)](https://github.com/andreasklae/IN5700-Exam-work/actions)
+[![Deploy Status](https://github.com/andreasklae/IN5700-Exam-prep/actions/workflows/deploy.yml/badge.svg)](https://github.com/andreasklae/IN5700-Exam-work/actions)
 
 ## Features ✨
 
@@ -58,10 +58,13 @@ An interactive, gamified React application designed to help you master Fog and C
   - Speed Demon
   - Knowledge Seeker
 
-### 💾 Persistent Storage
+### 💾 Progress & Sync
 - All progress saved locally in browser
-- No account needed
-- Pick up where you left off
+- **Cloud sync across devices** with simple 6-character code
+- No login required - just enter your sync code on any device
+- Auto-sync every 5 minutes
+- Manual export/import backup option
+- Works on laptop, phone, tablet
 
 ## Getting Started 🚀
 
@@ -76,12 +79,17 @@ An interactive, gamified React application designed to help you master Fog and C
 npm install
 ```
 
-2. Start the development server:
+2. **(Optional)** Set up Firebase for cloud sync across devices:
+   - See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for instructions
+   - Takes 5 minutes, completely free
+   - Skip this if you only use one device
+
+3. Start the development server:
 ```bash
 npm run dev
 ```
 
-3. Open your browser and navigate to the URL shown (typically `http://localhost:5173`)
+4. Open your browser and navigate to the URL shown (typically `http://localhost:5173`)
 
 ### Building for Production
 
@@ -117,6 +125,12 @@ The built files will be in the `dist` directory.
    - Complete various challenges
    - Earn points and badges
    - Aim for 100% completion
+
+7. **Sync Across Devices**: Study anywhere
+   - Click "Sync" button in header
+   - Generate a sync code
+   - Use the same code on all your devices
+   - Progress syncs automatically
 
 ## Study Tips 💡
 
