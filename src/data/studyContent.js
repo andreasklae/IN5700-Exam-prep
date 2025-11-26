@@ -701,13 +701,6 @@ EdgeCloudSim:
 • Easy to extend and customize
 • Built on CloudSim
 
-FogNetSim++:
-• Event-driven network simulator
-• Based on OMNET++
-• Detailed network modeling
-• Supports large-scale scenarios
-• Complex network topologies
-
 YAFS (Yet Another Fog Simulator):
 • Python-based
 • Dynamic topology
@@ -716,7 +709,6 @@ YAFS (Yet Another Fog Simulator):
         keyPoints: [
           'iFogSim is most widely used',
           'EdgeCloudSim excels at mobility scenarios',
-          'FogNetSim++ provides detailed network simulation',
           'Choose simulator based on research needs',
           'Most simulators are open source'
         ]
@@ -897,18 +889,12 @@ K8s Architecture:
 • Worker nodes: Run containers
 • Pods: Group of containers
 • Services: Network abstraction
-• Deployments: Declarative updates
-
-Alternatives:
-• Docker Swarm: Simpler than K8s
-• Apache Mesos: Data center OS
-• Nomad: Flexible scheduler`,
+• Deployments: Declarative updates`,
         keyPoints: [
           'Orchestration needed for container management at scale',
           'Kubernetes is the industry standard',
           'Automatic scaling and healing are key features',
-          'Declarative configuration is powerful',
-          'Simpler alternatives exist for smaller deployments'
+          'Declarative configuration is powerful'
         ]
       },
       {
@@ -936,17 +922,10 @@ Best Practices:
 • Optimize for ARM architecture (common in IoT)
 • Implement image caching strategies
 • Use container registries at the edge
-• Monitor resource usage
-
-Tools for Edge:
-• K3s: Lightweight Kubernetes
-• MicroK8s: Minimal K8s
-• KubeEdge: Extends K8s to edge
-• Docker on ARM devices`,
+• Monitor resource usage`,
         keyPoints: [
           'Containers perfect for fog due to portability',
           'Resource constraints require optimization',
-          'Lightweight K8s distributions available for edge',
           'Image distribution strategy is important',
           'Security considerations for edge deployments'
         ]
@@ -998,7 +977,6 @@ export const flashcards = [
   { id: 26, topic: 'containers', question: 'What are the key components of Docker?', answer: 'Docker Engine (runtime), Docker Images (read-only templates), Docker Containers (running instances), Docker Registry (image repository), and Docker Compose (multi-container apps).' },
   { id: 27, topic: 'containers', question: 'What is Kubernetes?', answer: 'Kubernetes (K8s) is the de facto standard for container orchestration, providing automated deployment, scaling, self-healing, service discovery, load balancing, and configuration management.' },
   { id: 28, topic: 'containers', question: 'Why are containers good for fog computing?', answer: 'Fast deployment to edge nodes, consistent environment across devices, efficient resource utilization, easy updates/rollbacks, and support for microservices architecture.' },
-  { id: 29, topic: 'containers', question: 'What is K3s?', answer: 'K3s is a lightweight Kubernetes distribution designed for resource-constrained environments like edge and IoT devices, with a smaller footprint while maintaining K8s compatibility.' },
   { id: 30, topic: 'containers', question: 'What is a Dockerfile?', answer: 'A Dockerfile is a text file containing instructions to build a Docker image, defining the base image, dependencies, configuration, and commands needed to create the container.' },
 ];
 
@@ -2231,7 +2209,7 @@ export const quizQuestions = [
     correct: 2,
     explanation: 'Location-aware or geographical proximity-based algorithms are particularly important in fog computing to minimize latency by routing to nearby nodes.'
   },
-  // ========== FOG SIMULATORS (29 questions) ==========
+  // ========== FOG SIMULATORS (4 questions) ==========
   {
     id: 95,
     topic: 'simulators',
@@ -2272,331 +2250,6 @@ export const quizQuestions = [
     explanation: 'Simulator uses mathematical models and abstractions to model behavior. Emulator runs actual code on virtual resources, providing higher accuracy but lower performance.'
   },
   {
-    id: 98,
-    topic: 'simulators',
-    question: 'Which two Fog simulators addressed in the course derive from CloudSim?',
-    options: [
-      'iFogSim and EdgeCloudSim',
-      'YAFS and EmuFog',
-      'FogTorchπ and EdgeCloudSim',
-      'iFogSim and YAFS'
-    ],
-    correct: 0,
-    explanation: 'iFogSim and EdgeCloudSim are two fog simulators that derive from CloudSim, extending it for fog/edge computing scenarios.'
-  },
-  {
-    id: 99,
-    topic: 'simulators',
-    question: 'Is iFogSim based on Java?',
-    options: [
-      'No, it is based on Python',
-      'Yes, iFogSim is Java-based',
-      'It is based on C++',
-      'It uses multiple languages'
-    ],
-    correct: 1,
-    explanation: 'Yes, iFogSim is based on Java, extending CloudSim which is also Java-based.'
-  },
-  {
-    id: 100,
-    topic: 'simulators',
-    question: 'When using iFogSim, is it possible to define topologies using a GUI?',
-    options: [
-      'Yes, iFogSim has a built-in GUI',
-      'No, topologies must be defined programmatically',
-      'Only for simple topologies',
-      'Only in newer versions'
-    ],
-    correct: 1,
-    explanation: 'No, iFogSim does not provide a GUI for topology definition. Topologies must be defined programmatically in Java code.'
-  },
-  {
-    id: 101,
-    topic: 'simulators',
-    question: 'Is there mobility support in iFogSim?',
-    options: [
-      'Yes, full mobility support',
-      'No, iFogSim does not support mobility',
-      'Only for specific device types',
-      'Only in experimental versions'
-    ],
-    correct: 1,
-    explanation: 'No, iFogSim does not have native mobility support. It assumes static topologies.'
-  },
-  {
-    id: 102,
-    topic: 'simulators',
-    question: 'Does iFogSim restrict the topology to be a hierarchical tree topology?',
-    options: [
-      'No, it supports arbitrary topologies',
-      'Yes, it only supports hierarchical tree topologies',
-      'Only for small networks',
-      'Only for specific scenarios'
-    ],
-    correct: 1,
-    explanation: 'Yes, iFogSim restricts topologies to hierarchical tree structures, with parent-child relationships between fog devices.'
-  },
-  {
-    id: 103,
-    topic: 'simulators',
-    question: 'In iFogSim, is communication only possible between a parent-child pair?',
-    options: [
-      'No, any devices can communicate',
-      'Yes, communication is restricted to parent-child pairs',
-      'Only for data transmission',
-      'Only for control messages'
-    ],
-    correct: 1,
-    explanation: 'Yes, in iFogSim\'s hierarchical tree topology, communication is only possible between parent-child pairs, not between siblings or arbitrary nodes.'
-  },
-  {
-    id: 104,
-    topic: 'simulators',
-    question: 'What are the main services offered by the iFogSim architecture?',
-    options: [
-      'Only simulation',
-      'Application placement, resource management, and energy modeling',
-      'Only network modeling',
-      'Only device modeling'
-    ],
-    correct: 1,
-    explanation: 'iFogSim offers: application placement services (where to deploy modules), resource management (CPU, memory, bandwidth), and energy consumption modeling.'
-  },
-  {
-    id: 105,
-    topic: 'simulators',
-    question: 'Is CloudSimSDN derived from CloudSim?',
-    options: [
-      'No, it is independent',
-      'Yes, CloudSimSDN extends CloudSim',
-      'It extends iFogSim',
-      'It is based on YAFS'
-    ],
-    correct: 1,
-    explanation: 'Yes, CloudSimSDN is derived from CloudSim, adding Software-Defined Networking (SDN) capabilities to the simulation framework.'
-  },
-  {
-    id: 106,
-    topic: 'simulators',
-    question: 'Is there mobility support in CloudSimSDN? Is it based on Discrete Event Simulation?',
-    options: [
-      'Yes to both',
-      'No mobility, Yes to DES',
-      'Yes mobility, No to DES',
-      'No to both'
-    ],
-    correct: 1,
-    explanation: 'CloudSimSDN does not have native mobility support, but it is based on Discrete Event Simulation (DES) like CloudSim.'
-  },
-  {
-    id: 107,
-    topic: 'simulators',
-    question: 'The layers of CloudSimSDN start from Cloud Resources (bottom) to Workload (top). What are the other layers?',
-    options: [
-      'Network, Application, Service',
-      'Network, SDN Control, Application',
-      'Storage, Network, Application',
-      'Virtualization, Network, Application'
-    ],
-    correct: 1,
-    explanation: 'CloudSimSDN layers (bottom to top): Cloud Resources, Network, SDN Control, Application, Workload.'
-  },
-  {
-    id: 108,
-    topic: 'simulators',
-    question: 'Is CloudSimSDN infrastructure-oriented?',
-    options: [
-      'No, it is application-oriented',
-      'Yes, it focuses on infrastructure modeling',
-      'It is balanced',
-      'It depends on configuration'
-    ],
-    correct: 1,
-    explanation: 'Yes, CloudSimSDN is infrastructure-oriented, focusing on modeling network infrastructure, SDN controllers, and network resources.'
-  },
-  {
-    id: 109,
-    topic: 'simulators',
-    question: 'Consider YAFS. The architecture is defined by six classes. Which are these?',
-    options: [
-      'Node, Link, Application, Placement, Allocation, Results',
-      'Device, Network, Task, Scheduler, Monitor, Logger',
-      'Fog, Cloud, Edge, Router, Switch, Server',
-      'Topology, Application, Placement, Allocation, Results, Simulator'
-    ],
-    correct: 0,
-    explanation: 'YAFS architecture uses six main classes: Node (devices), Link (connections), Application (workload), Placement (where apps run), Allocation (resource allocation), and Results (output).'
-  },
-  {
-    id: 110,
-    topic: 'simulators',
-    question: 'Is EmuFog an emulation framework that allows simulation of Docker-based applications?',
-    options: [
-      'Yes, exactly',
-      'No, it is a simulator, not emulator',
-      'It simulates but not Docker-based',
-      'It emulates but uses VMs, not Docker'
-    ],
-    correct: 0,
-    explanation: 'Yes, EmuFog is an emulation framework (not simulation) for Fog environments that allows emulation of Docker-based applications, running actual code.'
-  },
-  {
-    id: 111,
-    topic: 'simulators',
-    question: 'The EmuFog architecture is divided into three domains. What are these?',
-    options: [
-      'Cloud, Fog, Edge',
-      'Infrastructure, Application, Network',
-      'Physical, Virtual, Application',
-      'Compute, Storage, Network'
-    ],
-    correct: 0,
-    explanation: 'EmuFog architecture is divided into three domains: Cloud domain (data centers), Fog domain (edge servers), and Edge domain (IoT devices).'
-  },
-  {
-    id: 112,
-    topic: 'simulators',
-    question: 'Consider FogTorchπ. What are the two metrics according to which results are aggregated?',
-    options: [
-      'Latency and bandwidth',
-      'Cost and latency',
-      'Energy and performance',
-      'Availability and reliability'
-    ],
-    correct: 1,
-    explanation: 'FogTorchπ aggregates results according to two metrics: Cost (monetary cost of deployment) and Latency (end-to-end latency for applications).'
-  },
-  {
-    id: 113,
-    topic: 'simulators',
-    question: 'Is FogTorchπ abstract enough to allow arbitrary topologies?',
-    options: [
-      'No, it only supports trees',
-      'Yes, it supports arbitrary topologies',
-      'Only for small networks',
-      'Only specific topologies'
-    ],
-    correct: 1,
-    explanation: 'Yes, FogTorchπ is abstract enough to allow definition of arbitrary topologies, not restricted to hierarchical structures.'
-  },
-  {
-    id: 114,
-    topic: 'simulators',
-    question: 'Is scalability supported in FogTorchπ?',
-    options: [
-      'No, it only supports small networks',
-      'Yes, it supports scalable simulations',
-      'Only for specific scenarios',
-      'Only with limitations'
-    ],
-    correct: 1,
-    explanation: 'Yes, FogTorchπ supports scalability and can simulate large-scale fog environments.'
-  },
-  {
-    id: 115,
-    topic: 'simulators',
-    question: 'Consider EdgeCloudSim. Does it allow arbitrary topologies? Can network link delays vary during simulation?',
-    options: [
-      'Yes to both',
-      'No to both',
-      'Yes to topology, No to varying delays',
-      'No to topology, Yes to varying delays'
-    ],
-    correct: 0,
-    explanation: 'Yes, EdgeCloudSim allows arbitrary topologies (not restricted to trees) and supports network link delays that can vary during the simulation.'
-  },
-  {
-    id: 116,
-    topic: 'simulators',
-    question: 'For EdgeCloudSim configuration, there are 3 files needed. Which are these?',
-    options: [
-      'Config, Topology, Applications',
-      'Simulation, Network, Devices',
-      'Applications, Placements, Allocations',
-      'Topology, Applications, Output'
-    ],
-    correct: 0,
-    explanation: 'EdgeCloudSim requires three configuration files: Config file (simulation parameters), Topology file (network structure), and Applications file (workload definition).'
-  },
-  {
-    id: 117,
-    topic: 'simulators',
-    question: 'Regarding tutorials/documentation available for simulators, what can you say?',
-    options: [
-      'All have excellent documentation',
-      'Documentation quality varies significantly between simulators',
-      'None have documentation',
-      'Only commercial simulators have docs'
-    ],
-    correct: 1,
-    explanation: 'Documentation quality varies - some simulators (like iFogSim) have good tutorials, while others have limited or outdated documentation.'
-  },
-  {
-    id: 118,
-    topic: 'simulators',
-    question: 'Regarding fault injection, which 2 simulators support it and allow adding/removing nodes arbitrarily?',
-    options: [
-      'iFogSim and EdgeCloudSim',
-      'YAFS and EdgeCloudSim',
-      'FogTorchπ and YAFS',
-      'CloudSimSDN and EmuFog'
-    ],
-    correct: 1,
-    explanation: 'YAFS and EdgeCloudSim support fault injection (simulating failures) and allow adding or removing nodes and links arbitrarily during simulation.'
-  },
-  {
-    id: 119,
-    topic: 'simulators',
-    question: 'Regarding EmuFog, does it use Docker-based applications?',
-    options: [
-      'No, it uses VMs',
-      'Yes, it uses Docker-based applications in emulation',
-      'It uses both',
-      'It doesn\'t use containers'
-    ],
-    correct: 1,
-    explanation: 'Yes, EmuFog uses Docker-based applications in its emulation environment, running actual containerized applications.'
-  },
-  {
-    id: 120,
-    topic: 'simulators',
-    question: 'Which simulators/emulators offer native mobility support?',
-    options: [
-      'iFogSim and EdgeCloudSim',
-      'EdgeCloudSim and YAFS',
-      'All of them',
-      'None of them'
-    ],
-    correct: 1,
-    explanation: 'EdgeCloudSim and YAFS offer native mobility support, allowing simulation of mobile devices and dynamic network topologies.'
-  },
-  {
-    id: 121,
-    topic: 'simulators',
-    question: 'Which simulators offer the possibility to define models for monetary or energy consumption?',
-    options: [
-      'Only iFogSim',
-      'iFogSim and EdgeCloudSim',
-      'All simulators',
-      'None of them'
-    ],
-    correct: 1,
-    explanation: 'iFogSim and EdgeCloudSim offer models for both monetary cost and energy consumption, allowing cost and energy analysis.'
-  },
-  {
-    id: 122,
-    topic: 'simulators',
-    question: 'How do simulators compare regarding CPU/Memory consumption?',
-    options: [
-      'All consume the same',
-      'Consumption varies: abstract simulators (YAFS) use less, detailed (EmuFog) use more',
-      'All are very efficient',
-      'Consumption is not relevant'
-    ],
-    correct: 1,
-    explanation: 'CPU/Memory consumption varies: abstract simulators (YAFS, FogTorchπ) use less resources, while detailed emulators (EmuFog) use more due to running actual code.'
-  },
-  {
     id: 123,
     topic: 'simulators',
     question: 'What is the main trade-off in fog computing simulation?',
@@ -2609,7 +2262,7 @@ export const quizQuestions = [
     correct: 1,
     explanation: 'The main trade-off is accuracy vs performance - detailed models provide accuracy but are computationally expensive, while abstract models run faster but may miss details.'
   },
-  // ========== CONTAINERS (23 questions) ==========
+  // ========== CONTAINERS (18 questions) ==========
   {
     id: 124,
     topic: 'containers',
@@ -2830,71 +2483,6 @@ export const quizQuestions = [
     ],
     correct: 1,
     explanation: 'Before containers: developers faced "works on my machine" issues. After containers: package application with dependencies once, run consistently anywhere.'
-  },
-  {
-    id: 141,
-    topic: 'containers',
-    question: 'Which are 3 main Docker commands and their functionality?',
-    options: [
-      'docker run (start container), docker build (create image), docker ps (list containers)',
-      'docker start, docker stop, docker restart',
-      'docker create, docker delete, docker update',
-      'docker install, docker uninstall, docker configure'
-    ],
-    correct: 0,
-    explanation: 'Main commands: docker run (create/start container), docker build (build image from Dockerfile), docker ps (list running containers), docker images (list images), docker pull (download image).'
-  },
-  {
-    id: 142,
-    topic: 'containers',
-    question: 'Does a bind must exist between a port in the local machine with the container port?',
-    options: [
-      'No, containers are always accessible',
-      'Yes, for external access, local port must be bound to container port',
-      'Only for web applications',
-      'Only in production'
-    ],
-    correct: 1,
-    explanation: 'Yes, to access a containerized application from outside, you must bind (map) a port on the local machine to a port in the container using -p flag.'
-  },
-  {
-    id: 143,
-    topic: 'containers',
-    question: 'Can 2 or more containers in the same Docker Network communicate using their name?',
-    options: [
-      'No, they need IP addresses',
-      'Yes, containers on same network can communicate using container names',
-      'Only if using host network mode',
-      'Only in bridge mode'
-    ],
-    correct: 1,
-    explanation: 'Yes, containers in the same Docker network can communicate using container names (Docker provides DNS resolution), without needing localhost and port numbers.'
-  },
-  {
-    id: 144,
-    topic: 'containers',
-    question: 'What is the Docker command to get the list of Docker Networks?',
-    options: [
-      'docker network list',
-      'docker network ls',
-      'docker networks',
-      'docker list networks'
-    ],
-    correct: 1,
-    explanation: 'The command is "docker network ls" (or "docker network list") to list all Docker networks.'
-  },
-  {
-    id: 145,
-    topic: 'containers',
-    question: 'How many Docker Volume types are there? What are they?',
-    options: [
-      '2 types: bind mounts and volumes',
-      '3 types: bind mounts, volumes, tmpfs mounts',
-      '1 type: volumes only',
-      '4 types: bind, volume, tmpfs, network'
-    ],
-    correct: 1,
-    explanation: 'There are 3 Docker volume types: 1) Bind mounts (host path), 2) Volumes (managed by Docker), 3) tmpfs mounts (in-memory, Linux only).'
   },
   {
     id: 146,

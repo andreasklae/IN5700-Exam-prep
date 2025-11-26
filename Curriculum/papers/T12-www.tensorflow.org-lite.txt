@@ -1,0 +1,2 @@
+The idea is that you go to the web (https://www.tensorflow.org/lite) 
+and find relevant information related to the course that you present.

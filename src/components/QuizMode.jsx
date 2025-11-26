@@ -8,6 +8,7 @@ function QuizMode({ progress, updateProgress, onBack }) {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [showFeedback, setShowFeedback] = useState({}); // Track which questions show feedback
   const [startTime, setStartTime] = useState(null);
   const [timeSpent, setTimeSpent] = useState(0);
 
@@ -34,6 +35,7 @@ function QuizMode({ progress, updateProgress, onBack }) {
     
     setQuestions(selected);
     setAnswers({});
+    setShowFeedback({});
     setCurrentQuestion(0);
     setQuizState('active');
     setStartTime(Date.now());
@@ -43,6 +45,11 @@ function QuizMode({ progress, updateProgress, onBack }) {
     setAnswers({
       ...answers,
       [questionId]: answerIndex,
+    });
+    // Show immediate feedback when answer is selected
+    setShowFeedback({
+      ...showFeedback,
+      [questionId]: true,
     });
   };
 
@@ -173,6 +180,8 @@ function QuizMode({ progress, updateProgress, onBack }) {
   if (quizState === 'active') {
     const question = questions[currentQuestion];
     const isAnswered = answers[question.id] !== undefined;
+    const isCorrect = isAnswered && answers[question.id] === question.correct;
+    const showCurrentFeedback = showFeedback[question.id];
 
     return (
       <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
@@ -215,30 +224,88 @@ function QuizMode({ progress, updateProgress, onBack }) {
         <div className="bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-lg">
           <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">{question.question}</h3>
           
-          <div className="space-y-2 sm:space-y-3">
-            {question.options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => selectAnswer(question.id, index)}
-                className={`w-full p-3 sm:p-4 rounded-lg text-left transition-all touch-manipulation active:scale-[0.98] ${
-                  answers[question.id] === index
-                    ? 'bg-indigo-500 text-white shadow-lg'
-                    : 'bg-gray-50 hover:bg-gray-100 text-gray-800'
-                }`}
-              >
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <span className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base flex-shrink-0 ${
-                    answers[question.id] === index
-                      ? 'bg-white text-indigo-600'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                  <span className="text-sm sm:text-base">{option}</span>
-                </div>
-              </button>
-            ))}
+          <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+            {question.options.map((option, index) => {
+              const isSelected = answers[question.id] === index;
+              const isCorrectAnswer = index === question.correct;
+              const showAnswerFeedback = showCurrentFeedback;
+              
+              let buttonClass = 'bg-gray-50 hover:bg-gray-100 text-gray-800';
+              if (isSelected) {
+                buttonClass = showAnswerFeedback && isCorrectAnswer
+                  ? 'bg-green-500 text-white shadow-lg'
+                  : showAnswerFeedback && !isCorrectAnswer
+                  ? 'bg-red-500 text-white shadow-lg'
+                  : 'bg-indigo-500 text-white shadow-lg';
+              } else if (showAnswerFeedback && isCorrectAnswer) {
+                buttonClass = 'bg-green-100 border-2 border-green-500 text-gray-800';
+              }
+
+              return (
+                <button
+                  key={index}
+                  onClick={() => selectAnswer(question.id, index)}
+                  className={`w-full p-3 sm:p-4 rounded-lg text-left transition-all touch-manipulation active:scale-[0.98] ${buttonClass}`}
+                >
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <span className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base flex-shrink-0 ${
+                      isSelected
+                        ? showAnswerFeedback && isCorrectAnswer
+                          ? 'bg-white text-green-600'
+                          : showAnswerFeedback && !isCorrectAnswer
+                          ? 'bg-white text-red-600'
+                          : 'bg-white text-indigo-600'
+                        : showAnswerFeedback && isCorrectAnswer
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span className="text-sm sm:text-base flex-1">{option}</span>
+                    {showAnswerFeedback && isSelected && (
+                      <span className="text-lg sm:text-xl flex-shrink-0">
+                        {isCorrectAnswer ? '✓' : '✗'}
+                      </span>
+                    )}
+                    {showAnswerFeedback && !isSelected && isCorrectAnswer && (
+                      <span className="text-green-600 font-semibold text-sm sm:text-base flex-shrink-0">
+                        Correct
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
+
+          {/* Immediate Feedback Section */}
+          {showCurrentFeedback && (
+            <div className={`mt-4 sm:mt-6 p-4 sm:p-5 rounded-lg border-2 ${
+              isCorrect
+                ? 'bg-green-50 border-green-500'
+                : 'bg-red-50 border-red-500'
+            }`}>
+              <div className="flex items-start space-x-3 mb-3">
+                {isCorrect ? (
+                  <CheckCircle className="text-green-600 flex-shrink-0" size={24} />
+                ) : (
+                  <XCircle className="text-red-600 flex-shrink-0" size={24} />
+                )}
+                <div className="flex-1">
+                  <p className={`font-semibold text-sm sm:text-base mb-2 ${
+                    isCorrect ? 'text-green-800' : 'text-red-800'
+                  }`}>
+                    {isCorrect ? 'Correct!' : 'Incorrect'}
+                  </p>
+                  <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border border-blue-200">
+                    <p className="text-xs sm:text-sm text-gray-700">
+                      <strong className="text-blue-800">Explanation:</strong> {question.explanation}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg flex items-center justify-between gap-2 sm:gap-4">
