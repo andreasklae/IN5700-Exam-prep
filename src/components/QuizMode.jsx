@@ -11,6 +11,19 @@ function QuizMode({ progress, updateProgress, onBack }) {
   const [startTime, setStartTime] = useState(null);
   const [timeSpent, setTimeSpent] = useState(0);
 
+  // Check for random quiz from dashboard
+  useEffect(() => {
+    const randomQuiz = sessionStorage.getItem('randomQuiz');
+    if (randomQuiz) {
+      const randomQuestions = JSON.parse(randomQuiz);
+      setQuestions(randomQuestions);
+      setSelectedTopic('all');
+      setQuizState('active');
+      setStartTime(Date.now());
+      sessionStorage.removeItem('randomQuiz');
+    }
+  }, []);
+
   const startQuiz = (topicId, numQuestions = 5) => {
     const topicQuestions = topicId === 'all'
       ? quizQuestions
@@ -66,8 +79,8 @@ function QuizMode({ progress, updateProgress, onBack }) {
     setQuizState('results');
   };
 
-  // Setup View
-  if (quizState === 'setup') {
+  // Setup View (skip if random quiz loaded)
+  if (quizState === 'setup' && questions.length === 0) {
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-xl p-6 shadow-lg">
@@ -162,88 +175,90 @@ function QuizMode({ progress, updateProgress, onBack }) {
     const isAnswered = answers[question.id] !== undefined;
 
     return (
-      <div className="space-y-6 max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
+      <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
             <button
               onClick={() => setQuizState('setup')}
-              className="flex items-center text-indigo-600 hover:text-indigo-700 font-medium"
+              className="flex items-center text-indigo-600 hover:text-indigo-700 font-medium text-sm sm:text-base active:scale-95 touch-manipulation"
             >
-              <ArrowLeft size={20} className="mr-2" />
-              Exit Quiz
+              <ArrowLeft size={18} className="mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Exit Quiz</span>
+              <span className="sm:hidden">Exit</span>
             </button>
             
-            <div className="flex items-center space-x-2 text-gray-600">
-              <Clock size={20} />
+            <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 text-sm sm:text-base">
+              <Clock size={16} />
               <span className="font-medium">
                 {Math.floor((Date.now() - startTime) / 1000)}s
               </span>
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-800">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
               Question {currentQuestion + 1} of {questions.length}
             </h2>
-            <span className="text-indigo-600 font-semibold">
+            <span className="text-sm sm:text-base text-indigo-600 font-semibold">
               {Object.keys(answers).length} / {questions.length} answered
             </span>
           </div>
           
-          <div className="mt-4 bg-gray-200 rounded-full h-2">
+          <div className="mt-3 sm:mt-4 bg-gray-200 rounded-full h-1.5 sm:h-2">
             <div
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full h-2 transition-all"
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full h-1.5 sm:h-2 transition-all"
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-8 shadow-lg">
-          <h3 className="text-xl font-bold text-gray-800 mb-6">{question.question}</h3>
+        <div className="bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-lg">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">{question.question}</h3>
           
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {question.options.map((option, index) => (
               <button
                 key={index}
                 onClick={() => selectAnswer(question.id, index)}
-                className={`w-full p-4 rounded-lg text-left transition-all ${
+                className={`w-full p-3 sm:p-4 rounded-lg text-left transition-all touch-manipulation active:scale-[0.98] ${
                   answers[question.id] === index
                     ? 'bg-indigo-500 text-white shadow-lg'
                     : 'bg-gray-50 hover:bg-gray-100 text-gray-800'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <span className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-sm sm:text-base flex-shrink-0 ${
                     answers[question.id] === index
                       ? 'bg-white text-indigo-600'
                       : 'bg-gray-200 text-gray-600'
                   }`}>
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span>{option}</span>
+                  <span className="text-sm sm:text-base">{option}</span>
                 </div>
               </button>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-lg flex items-center justify-between">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg flex items-center justify-between gap-2 sm:gap-4">
           <button
             onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
             disabled={currentQuestion === 0}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all touch-manipulation active:scale-95 ${
               currentQuestion === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
-            Previous
+            <span className="hidden sm:inline">Previous</span>
+            <span className="sm:hidden">Prev</span>
           </button>
 
           {currentQuestion < questions.length - 1 ? (
             <button
               onClick={() => setCurrentQuestion(currentQuestion + 1)}
-              className="px-6 py-3 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-600 transition-colors"
+              className="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 bg-indigo-500 text-white rounded-lg text-sm sm:text-base font-medium hover:bg-indigo-600 transition-colors touch-manipulation active:scale-95"
             >
               Next
             </button>
@@ -251,7 +266,7 @@ function QuizMode({ progress, updateProgress, onBack }) {
             <button
               onClick={submitQuiz}
               disabled={Object.keys(answers).length !== questions.length}
-              className={`px-8 py-3 rounded-lg font-medium transition-all ${
+              className={`flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all touch-manipulation active:scale-95 ${
                 Object.keys(answers).length === questions.length
                   ? 'bg-green-500 text-white hover:bg-green-600'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'

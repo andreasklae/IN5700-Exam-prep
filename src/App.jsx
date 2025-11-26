@@ -144,42 +144,43 @@ function App() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-6">
-              <div className="text-right">
-                <div className="text-sm text-gray-600">Total Points</div>
-                <div className="text-xl font-bold text-indigo-600">{progress.totalPoints || 0}</div>
+            <div className="flex items-center space-x-3 sm:space-x-6">
+              <div className="text-right hidden sm:block">
+                <div className="text-xs sm:text-sm text-gray-600">Total Points</div>
+                <div className="text-lg sm:text-xl font-bold text-indigo-600">{progress.totalPoints || 0}</div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-600">Streak</div>
-                <div className="text-xl font-bold text-orange-500 flex items-center">
+                <div className="text-xs sm:text-sm text-gray-600">Streak</div>
+                <div className="text-lg sm:text-xl font-bold text-orange-500 flex items-center">
                   🔥 {progress.streak || 0}
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Navigation */}
-          <nav className="mt-4 flex space-x-2 overflow-x-auto pb-2">
+          {/* Navigation - Mobile Optimized */}
+          <nav className="mt-3 sm:mt-4 flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 scrollbar-hide">
             {navigation.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setCurrentView(id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-all whitespace-nowrap active:scale-95 touch-manipulation ${
                   currentView === id
                     ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <Icon size={18} />
-                <span>{label}</span>
+                <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{label.split(' ')[0]}</span>
               </button>
             ))}
           </nav>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content - Mobile Optimized */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         <div className="animate-fade-in">
           {views[currentView]}
         </div>

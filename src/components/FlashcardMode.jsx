@@ -12,8 +12,21 @@ function FlashcardMode({ progress, updateProgress, onBack }) {
     ? flashcards.filter(card => card.topic === selectedTopic)
     : [];
 
+  // Check for random flashcards from dashboard
   useEffect(() => {
-    if (selectedTopic) {
+    const randomFlashcards = sessionStorage.getItem('randomFlashcards');
+    if (randomFlashcards) {
+      const cards = JSON.parse(randomFlashcards);
+      setSessionCards(cards);
+      setSelectedTopic('all');
+      setCurrentIndex(0);
+      setIsFlipped(false);
+      sessionStorage.removeItem('randomFlashcards');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedTopic && !sessionStorage.getItem('randomFlashcards')) {
       // Shuffle cards for variety
       const shuffled = [...topicFlashcards].sort(() => Math.random() - 0.5);
       setSessionCards(shuffled);
@@ -58,8 +71,8 @@ function FlashcardMode({ progress, updateProgress, onBack }) {
     setIsFlipped(false);
   };
 
-  // Topic Selection View
-  if (!selectedTopic) {
+  // Topic Selection View (skip if random flashcards loaded)
+  if (!selectedTopic && sessionCards.length === 0) {
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-xl p-6 shadow-lg">
@@ -135,39 +148,48 @@ function FlashcardMode({ progress, updateProgress, onBack }) {
   }
 
   // Flashcard View
-  const topic = topics.find(t => t.id === selectedTopic);
+  const topic = selectedTopic ? topics.find(t => t.id === selectedTopic) : { title: 'Random Review', icon: '🎲', color: 'from-purple-500 to-pink-500' };
   const reviewedCount = sessionCards.filter(card => 
     progress.flashcardsReviewed?.includes(card.id)
   ).length;
 
+  // If we have cards but no topic selected, we're in random mode
+  if (sessionCards.length > 0 && !selectedTopic) {
+    // Show flashcard view directly
+  }
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
+    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+      <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
           <button
-            onClick={() => setSelectedTopic(null)}
-            className="flex items-center text-indigo-600 hover:text-indigo-700 font-medium"
+            onClick={() => {
+              setSelectedTopic(null);
+              setSessionCards([]);
+            }}
+            className="flex items-center text-indigo-600 hover:text-indigo-700 font-medium text-sm sm:text-base active:scale-95 touch-manipulation"
           >
-            <ArrowLeft size={20} className="mr-2" />
-            Change Topic
+            <ArrowLeft size={18} className="mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Change Topic</span>
+            <span className="sm:hidden">Back</span>
           </button>
           
           <button
             onClick={handleShuffle}
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm sm:text-base active:scale-95 touch-manipulation"
           >
-            <RotateCw size={18} />
+            <RotateCw size={16} />
             <span>Shuffle</span>
           </button>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <div className={`w-12 h-12 bg-gradient-to-br ${topic.color} rounded-lg flex items-center justify-center text-2xl`}>
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${topic.color} rounded-lg flex items-center justify-center text-xl sm:text-2xl`}>
             {topic.icon}
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">{topic.title}</h2>
-            <p className="text-gray-600 text-sm">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">{topic.title}</h2>
+            <p className="text-gray-600 text-xs sm:text-sm">
               Card {currentIndex + 1} of {sessionCards.length}
             </p>
           </div>
@@ -188,31 +210,31 @@ function FlashcardMode({ progress, updateProgress, onBack }) {
         </div>
       </div>
 
-      {/* Flashcard */}
+      {/* Flashcard - Mobile Optimized */}
       {currentCard && (
         <div
           onClick={handleFlip}
-          className="bg-white rounded-2xl shadow-2xl cursor-pointer min-h-[400px] flex items-center justify-center p-8 card-hover"
+          className="bg-white rounded-xl sm:rounded-2xl shadow-2xl cursor-pointer min-h-[300px] sm:min-h-[400px] flex items-center justify-center p-4 sm:p-6 md:p-8 card-hover touch-manipulation active:scale-[0.98]"
           style={{ perspective: '1000px' }}
         >
-          <div className="text-center max-w-2xl">
+          <div className="text-center max-w-2xl w-full">
             {!isFlipped ? (
               <div>
-                <div className="text-sm text-gray-500 mb-4">QUESTION</div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-8">
+                <div className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">QUESTION</div>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 md:mb-8 px-2">
                   {currentCard.question}
                 </h3>
-                <p className="text-indigo-600 font-medium">Click to reveal answer</p>
+                <p className="text-sm sm:text-base text-indigo-600 font-medium">Tap to reveal answer</p>
               </div>
             ) : (
               <div>
-                <div className="text-sm text-gray-500 mb-4">ANSWER</div>
-                <p className="text-lg text-gray-700 leading-relaxed mb-8">
+                <div className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">ANSWER</div>
+                <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6 md:mb-8 px-2">
                   {currentCard.answer}
                 </p>
                 {progress.flashcardsReviewed?.includes(currentCard.id) && (
-                  <div className="flex items-center justify-center space-x-2 text-green-600">
-                    <CheckCircle size={20} />
+                  <div className="flex items-center justify-center space-x-2 text-green-600 text-sm sm:text-base">
+                    <CheckCircle size={18} />
                     <span className="font-medium">Reviewed (+2 points)</span>
                   </div>
                 )}
@@ -222,25 +244,26 @@ function FlashcardMode({ progress, updateProgress, onBack }) {
         </div>
       )}
 
-      {/* Navigation */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
+      {/* Navigation - Mobile Optimized */}
+      <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
         <div className="flex items-center justify-between">
           <button
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all touch-manipulation active:scale-95 ${
               currentIndex === 0
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-indigo-500 text-white hover:bg-indigo-600'
             }`}
           >
-            <ChevronLeft size={20} />
-            <span>Previous</span>
+            <ChevronLeft size={18} />
+            <span className="hidden sm:inline">Previous</span>
+            <span className="sm:hidden">Prev</span>
           </button>
 
-          <div className="text-center">
-            <div className="text-sm text-gray-600">Cards Reviewed</div>
-            <div className="text-2xl font-bold text-indigo-600">
+          <div className="text-center px-2">
+            <div className="text-xs sm:text-sm text-gray-600">Reviewed</div>
+            <div className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
               {reviewedCount} / {sessionCards.length}
             </div>
           </div>
@@ -248,14 +271,14 @@ function FlashcardMode({ progress, updateProgress, onBack }) {
           <button
             onClick={handleNext}
             disabled={currentIndex === sessionCards.length - 1}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${
+            className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all touch-manipulation active:scale-95 ${
               currentIndex === sessionCards.length - 1
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-indigo-500 text-white hover:bg-indigo-600'
             }`}
           >
             <span>Next</span>
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </button>
         </div>
       </div>
