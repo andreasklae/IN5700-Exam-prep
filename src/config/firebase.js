@@ -16,13 +16,27 @@ const firebaseConfig = {
 
 let app;
 let db;
+let isConfigured = false;
+
+// Check if Firebase config is valid (not placeholder values)
+const isValidConfig = () => {
+  return firebaseConfig.apiKey && 
+         firebaseConfig.apiKey !== "AIzaSyBxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxX" &&
+         firebaseConfig.projectId &&
+         firebaseConfig.projectId !== "exam-prep-sync";
+};
 
 try {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  if (isValidConfig()) {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    isConfigured = true;
+  }
 } catch (error) {
-  console.warn('Firebase not configured. Sync features disabled.', error);
+  // Silently fail - Firebase not configured
+  db = null;
+  isConfigured = false;
 }
 
-export { db };
+export { db, isConfigured };
 

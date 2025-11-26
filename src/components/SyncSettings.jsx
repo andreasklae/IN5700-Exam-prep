@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Cloud, CloudOff, RefreshCw, Copy, Check, Download, Upload, X } from 'lucide-react';
 import { generateSyncCode, saveToCloud, loadFromCloud, mergeProgress } from '../utils/sync';
+import { isConfigured } from '../config/firebase';
 
 function SyncSettings({ progress, updateProgress, onClose }) {
   const [syncCode, setSyncCode] = useState(progress.syncCode || '');
@@ -36,6 +37,11 @@ function SyncSettings({ progress, updateProgress, onClose }) {
       return;
     }
 
+    if (!isConfigured) {
+      showMessage('Firebase not configured. Please set up Firebase to enable cloud sync. See FIREBASE_SETUP.md for instructions.', 'error');
+      return;
+    }
+
     setSyncing(true);
     try {
       await saveToCloud(syncCode, progress);
@@ -43,7 +49,13 @@ function SyncSettings({ progress, updateProgress, onClose }) {
       setLastSync(new Date());
       showMessage('Progress saved to cloud!', 'success');
     } catch (error) {
-      showMessage('Failed to save. Check your internet connection.', 'error');
+      if (error.message.includes('not configured')) {
+        showMessage('Firebase not configured. Please set up Firebase to enable cloud sync.', 'error');
+      } else if (error.code === 'unavailable' || error.code === 'failed-precondition') {
+        showMessage('Unable to connect. Check your internet connection.', 'error');
+      } else {
+        showMessage('Failed to save. Check your internet connection.', 'error');
+      }
     }
     setSyncing(false);
   };
@@ -51,6 +63,11 @@ function SyncSettings({ progress, updateProgress, onClose }) {
   const handleLoadFromCloud = async () => {
     if (!inputCode || inputCode.length !== 6) {
       showMessage('Please enter a valid 6-character sync code', 'error');
+      return;
+    }
+
+    if (!isConfigured) {
+      showMessage('Firebase not configured. Please set up Firebase to enable cloud sync. See FIREBASE_SETUP.md for instructions.', 'error');
       return;
     }
 
@@ -63,7 +80,15 @@ function SyncSettings({ progress, updateProgress, onClose }) {
       setInputCode('');
       showMessage('Progress synced successfully!', 'success');
     } catch (error) {
-      showMessage('Sync code not found or connection failed', 'error');
+      if (error.message.includes('not configured')) {
+        showMessage('Firebase not configured. Please set up Firebase to enable cloud sync.', 'error');
+      } else if (error.message.includes('not found')) {
+        showMessage('Sync code not found. Make sure you entered it correctly.', 'error');
+      } else if (error.code === 'unavailable' || error.code === 'failed-precondition') {
+        showMessage('Unable to connect. Check your internet connection.', 'error');
+      } else {
+        showMessage('Sync failed. Check your internet connection.', 'error');
+      }
     }
     setSyncing(false);
   };
@@ -132,6 +157,23 @@ function SyncSettings({ progress, updateProgress, onClose }) {
               'bg-blue-100 text-blue-800'
             }`}>
               {message}
+            </div>
+          )}
+
+          {/* Firebase Not Configured Notice */}
+          {!isConfigured && (
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6">
+              <h3 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                <CloudOff className="mr-2" size={20} />
+                Cloud Sync Not Available
+              </h3>
+              <p className="text-sm text-yellow-700 mb-3">
+                Firebase is not configured. To enable cloud sync across devices, you need to set up Firebase.
+              </p>
+              <p className="text-sm text-yellow-700">
+                <strong>Option 1:</strong> Set up Firebase (see FIREBASE_SETUP.md) for automatic cloud sync<br />
+                <strong>Option 2:</strong> Use manual Export/Import below to transfer progress between devices
+              </p>
             </div>
           )}
 

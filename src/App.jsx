@@ -1,31 +1,40 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, Brain, Trophy, Target, TrendingUp, Award, Cloud } from 'lucide-react';
+import { BookOpen, Brain, Trophy, Target, TrendingUp, Award } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import TopicExplorer from './components/TopicExplorer';
 import FlashcardMode from './components/FlashcardMode';
 import QuizMode from './components/QuizMode';
 import ProgressView from './components/ProgressView';
 import AchievementView from './components/AchievementView';
-import SyncSettings from './components/SyncSettings';
 import { loadProgress, saveProgress } from './utils/storage';
-import { autoSync } from './utils/sync';
+import { autoSync, loadFromCloud } from './utils/sync';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [progress, setProgress] = useState(loadProgress());
-  const [showSyncSettings, setShowSyncSettings] = useState(false);
+
+  // Load from cloud on mount and merge with local
+  useEffect(() => {
+    const loadCloudProgress = async () => {
+      const cloudData = await loadFromCloud();
+      if (cloudData) {
+        const merged = mergeProgress(progress, cloudData);
+        setProgress(merged);
+        saveProgress(merged);
+      }
+    };
+    loadCloudProgress();
+  }, []);
 
   useEffect(() => {
     saveProgress(progress);
     
-    // Auto-sync every 5 minutes if sync code exists
-    if (progress.syncCode) {
-      const syncInterval = setInterval(() => {
-        autoSync(progress.syncCode, progress);
-      }, 5 * 60 * 1000);
-      
-      return () => clearInterval(syncInterval);
-    }
+    // Auto-sync to cloud every 30 seconds
+    const syncInterval = setInterval(() => {
+      autoSync(progress);
+    }, 30 * 1000);
+    
+    return () => clearInterval(syncInterval);
   }, [progress]);
 
   const updateProgress = (updates) => {
@@ -59,6 +68,48 @@ function App() {
     });
   };
 
+  // Merge progress from two sources (local and cloud)
+  const mergeProgress = (local, cloud) => {
+    if (!cloud) return local;
+    return {
+      totalPoints: Math.max(local.totalPoints || 0, cloud.totalPoints || 0),
+      streak: Math.max(local.streak || 0, cloud.streak || 0),
+      lastStudyDate: (local.lastStudyDate && cloud.lastStudyDate) 
+        ? (local.lastStudyDate > cloud.lastStudyDate ? local.lastStudyDate : cloud.lastStudyDate)
+        : (local.lastStudyDate || cloud.lastStudyDate),
+      studyDays: [...new Set([...(local.studyDays || []), ...(cloud.studyDays || [])])],
+      topicsStudied: {
+        ...(cloud.topicsStudied || {}),
+        ...(local.topicsStudied || {}),
+        ...Object.keys(local.topicsStudied || {}).reduce((acc, key) => {
+          acc[key] = [...new Set([
+            ...(cloud.topicsStudied?.[key] || []),
+            ...(local.topicsStudied?.[key] || [])
+          ])];
+          return acc;
+        }, {})
+      },
+      flashcardsReviewed: [...new Set([
+        ...(local.flashcardsReviewed || []),
+        ...(cloud.flashcardsReviewed || [])
+      ])],
+      quizzesCompleted: [...new Set([
+        ...(local.quizzesCompleted || []),
+        ...(cloud.quizzesCompleted || [])
+      ])],
+      achievements: [...new Set([
+        ...(local.achievements || []),
+        ...(cloud.achievements || [])
+      ])],
+      topicProgress: {
+        ...(cloud.topicProgress || {}),
+        ...(local.topicProgress || {}),
+      },
+      quizScores: [...(cloud.quizScores || []), ...(local.quizScores || [])],
+      studySessions: Math.max(local.studySessions || 0, cloud.studySessions || 0),
+    };
+  };
+
   const views = {
     dashboard: <Dashboard progress={progress} onNavigate={setCurrentView} />,
     topics: <TopicExplorer progress={progress} updateProgress={updateProgress} />,
@@ -66,14 +117,6 @@ function App() {
     quiz: <QuizMode progress={progress} updateProgress={updateProgress} onBack={() => setCurrentView('dashboard')} />,
     progress: <ProgressView progress={progress} onBack={() => setCurrentView('dashboard')} />,
     achievements: <AchievementView progress={progress} onBack={() => setCurrentView('dashboard')} />,
-  };
-
-  const handleUpdateProgress = (updates) => {
-    updateProgress(updates);
-    // Auto-sync after updates if sync is enabled
-    if (progress.syncCode) {
-      autoSync(progress.syncCode, { ...progress, ...updates });
-    }
   };
 
   const navigation = [
@@ -102,16 +145,6 @@ function App() {
             </div>
             
             <div className="flex items-center space-x-6">
-              <button
-                onClick={() => setShowSyncSettings(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors"
-                title="Sync across devices"
-              >
-                <Cloud size={20} className="text-indigo-600" />
-                <span className="text-sm font-medium text-indigo-700">
-                  {progress.syncCode ? 'Synced' : 'Sync'}
-                </span>
-              </button>
               <div className="text-right">
                 <div className="text-sm text-gray-600">Total Points</div>
                 <div className="text-xl font-bold text-indigo-600">{progress.totalPoints || 0}</div>
@@ -156,15 +189,6 @@ function App() {
       <footer className="mt-12 pb-8 text-center text-gray-600">
         <p className="text-sm">Good luck with your exam! 🎓</p>
       </footer>
-
-      {/* Sync Settings Modal */}
-      {showSyncSettings && (
-        <SyncSettings
-          progress={progress}
-          updateProgress={handleUpdateProgress}
-          onClose={() => setShowSyncSettings(false)}
-        />
-      )}
     </div>
   );
 }
